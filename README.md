@@ -137,3 +137,4 @@ cleanly onto `MediaStore.RELATIVE_PATH`.
 | `WAKE_LOCK` | Held only for the duration of an individual upload |
 
 No `MANAGE_EXTERNAL_STORAGE` permission is requested.
+

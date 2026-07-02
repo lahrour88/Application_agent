@@ -5,7 +5,8 @@
     <!-- Required to read image metadata via MediaStore -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <!-- Fallback for pre-existing installs / devices where READ_MEDIA_IMAGES is unavailable -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -34,6 +35,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.FileUploadAgent"
+        android:usesCleartextTraffic="true"
         tools:targetApi="35">
 
         <activity

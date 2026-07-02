@@ -101,10 +101,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun addFolder(uri: Uri) {
-        contentResolver.takePersistableUriPermission(
-            uri,
-            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
-        )
+        try {
+            contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+            )
+        } catch (e: SecurityException) {
+            Toast.makeText(
+                this,
+                "Cannot access this folder. Please select a different folder.",
+                Toast.LENGTH_LONG
+            ).show()
+            return
+        }
+
         val displayPath = uri.lastPathSegment ?: uri.toString()
         settingsRepository.addFolder(WatchedFolder(treeUri = uri.toString(), displayPath = displayPath))
         refreshFolderList()

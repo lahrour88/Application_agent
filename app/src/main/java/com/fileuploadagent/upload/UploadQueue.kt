@@ -35,7 +35,7 @@ class UploadQueue(
     // Keyed by file name; a short recency window is enough since both
     // detectors react within seconds of the same write.
     private val recentlyEnqueued = object : LinkedHashMap<String, Long>(16, 0.75f, true) {
-        override fun removeEldestEntry(eldest: MutableMap.Entry<String, Long>): Boolean =
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Long>): Boolean =
             size > DEDUP_CACHE_MAX_SIZE
     }
 

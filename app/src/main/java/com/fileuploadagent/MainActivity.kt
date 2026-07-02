@@ -145,11 +145,12 @@ class MainActivity : AppCompatActivity() {
         refreshFolderList()
     }
 
+    // الدالة المعدّلة كما هو مطلوب
     private fun addFolder(uri: Uri) {
         try {
             contentResolver.takePersistableUriPermission(
                 uri,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
             )
         } catch (e: SecurityException) {
             Toast.makeText(
@@ -161,7 +162,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         val displayPath = uri.lastPathSegment ?: uri.toString()
-        settingsRepository.addFolder(WatchedFolder(treeUri = uri.toString(), displayPath = displayPath))
+        settingsRepository.addFolder(
+            WatchedFolder(
+                treeUri = uri.toString(),
+                displayPath = displayPath
+            )
+        )
         refreshFolderList()
     }
 

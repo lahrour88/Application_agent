@@ -1,11 +1,16 @@
 package com.fileuploadagent
 
+import android.app.AlertDialog
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
+import android.widget.ScrollView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +24,8 @@ import com.fileuploadagent.settings.WatchedFolder
 import com.fileuploadagent.ui.FolderAdapter
 import com.fileuploadagent.ui.LogAdapter
 import com.fileuploadagent.util.Constants
+import java.io.PrintWriter
+import java.io.StringWriter
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,7 +39,11 @@ class MainActivity : AppCompatActivity() {
 
     private val openDocumentTree =
         registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
-            if (uri != null) addFolder(uri)
+            try {
+                if (uri != null) addFolder(uri)
+            } catch (t: Throwable) {
+                showErrorDialog(t)
+            }
         }
 
     private val requestMediaPermission =
@@ -65,6 +76,40 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         refreshFolderList()
+    }
+
+    // --- Error reporting -----------------------------------------------------
+
+    private fun showErrorDialog(t: Throwable) {
+        val stringWriter = StringWriter()
+        t.printStackTrace(PrintWriter(stringWriter))
+        val fullStackTrace = stringWriter.toString()
+
+        val fullMessage = buildString {
+            append("Exception: ${t.javaClass.name}\n")
+            append("Message: ${t.message}\n\n")
+            append(fullStackTrace)
+        }
+
+        val textView = TextView(this).apply {
+            text = fullMessage
+            setPadding(32, 32, 32, 32)
+            setTextIsSelectable(true)
+        }
+        val scrollView = ScrollView(this).apply {
+            addView(textView)
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Unexpected Error")
+            .setView(scrollView)
+            .setPositiveButton("OK", null)
+            .setNeutralButton("Copy") { _, _ ->
+                val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                clipboard.setPrimaryClip(ClipData.newPlainText("Error", fullMessage))
+                Toast.makeText(this, "Copied to clipboard", Toast.LENGTH_SHORT).show()
+            }
+            .show()
     }
 
     // --- Server settings -----------------------------------------------------
